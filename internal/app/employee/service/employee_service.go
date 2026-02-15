@@ -69,6 +69,33 @@ func (s *employeeService) CreateEmployee(ctx context.Context, data dto.CreateEmp
 	return s.userRepo.CreateEmployee(ctx, employee)
 }
 
+func (s *employeeService) UpdateEmployee(ctx context.Context, data dto.UpdateEmployeeRequest) error {
+	valErr := s.validator.Validate(data)
+	if valErr != nil {
+		return valErr
+	}
+
+	employee := entity.Employee{
+		ID:    data.ID,
+		Name:  data.Name,
+		Email: data.Email,
+		Phone: data.Phone,
+		Position: enums.NullEmployeePositionIdx{
+			EmployeePositionIdx: data.Position,
+			Valid:               true,
+		},
+		Department: enums.NullEmployeeDepartmentIdx{
+			EmployeeDepartmentIdx: data.Department,
+			Valid:                 true,
+		},
+		Salary:  data.Salary,
+		Address: data.Address,
+		Status:  data.Status,
+	}
+
+	return s.userRepo.UpdateEmployee(ctx, employee)
+}
+
 func (s *employeeService) DeleteEmployee(ctx context.Context, param dto.DeleteEmployeeParam) error {
 	return s.userRepo.DeleteEmployee(ctx, param.ID)
 }
