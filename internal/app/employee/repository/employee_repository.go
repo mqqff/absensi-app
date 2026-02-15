@@ -72,6 +72,17 @@ func (r *employeeRepository) Rollback() error {
 	return nil
 }
 
+func (r *employeeRepository) GetEmployeeByID(ctx context.Context, employeeID string) (entity.Employee, error) {
+	var employee entity.Employee
+	query := `SELECT id, name, email, phone, position, department, salary, address, status FROM employees WHERE id = $1`
+	err := r.conn.GetContext(ctx, &employee, query, employeeID)
+	if err != nil {
+		return entity.Employee{}, err
+	}
+
+	return employee, nil
+}
+
 func (r *employeeRepository) CreateEmployee(ctx context.Context, employee entity.Employee) error {
 	query := `
 		INSERT INTO employees (id, name, email, phone, position, salary, address, status)
