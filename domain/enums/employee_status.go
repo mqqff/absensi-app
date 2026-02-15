@@ -10,19 +10,19 @@ const (
 )
 
 var (
-	UserStatusMap = map[EmployeeStatus]string{
+	EmployeeStatusMap = map[EmployeeStatus]string{
 		Active:   "Aktif",
 		Inactive: "Tidak Aktif",
 	}
 
-	UserStatusMapReverse = map[string]EmployeeStatus{
+	EmployeeStatusMapReverse = map[string]EmployeeStatus{
 		"Aktif":       Active,
 		"Tidak Aktif": Inactive,
 	}
 )
 
 func (s EmployeeStatus) String() string {
-	if status, ok := UserStatusMap[s]; ok {
+	if status, ok := EmployeeStatusMap[s]; ok {
 		return status
 	}
 
@@ -36,7 +36,7 @@ func (s *EmployeeStatus) Scan(value interface{}) error {
 	case int32:
 		*s = EmployeeStatus(v)
 	case string:
-		for key, val := range UserStatusMapReverse {
+		for key, val := range EmployeeStatusMapReverse {
 			if key == v {
 				*s = val
 				return nil
@@ -45,7 +45,7 @@ func (s *EmployeeStatus) Scan(value interface{}) error {
 
 		return errors.New("invalid user status string")
 	case []byte:
-		for key, val := range UserStatusMapReverse {
+		for key, val := range EmployeeStatusMapReverse {
 			if string(v) == key {
 				*s = val
 				return nil
