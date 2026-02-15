@@ -33,6 +33,22 @@ func NewEmployeeService(
 	}
 }
 
+func (s *employeeService) GetEmployee(ctx context.Context, param dto.GetEmployee) (dto.EmployeeResponse, error) {
+	valErr := s.validator.Validate(param)
+	if valErr != nil {
+		return dto.EmployeeResponse{}, valErr
+	}
+
+	employee, err := s.userRepo.GetEmployeeByID(ctx, param.ID)
+	if err != nil {
+		return dto.EmployeeResponse{}, err
+	}
+
+	response := dto.FormatToEmployeeResponse(employee)
+
+	return response, nil
+}
+
 func (s *employeeService) CreateEmployee(ctx context.Context, data dto.CreateEmployeeRequest) error {
 	valErr := s.validator.Validate(data)
 	if valErr != nil {
