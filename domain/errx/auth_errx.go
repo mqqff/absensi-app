@@ -8,16 +8,21 @@ var (
 	ErrEmployeeNotFound = NewError(
 		fiber.StatusNotFound,
 		"employee_not_found",
-		"Akun tidak ditemukan",
+		"akun tidak ditemukan",
 	)
 	ErrCredentialsNotMatch = NewError(
 		fiber.StatusUnauthorized,
 		"credentials_not_match",
-		"Email atau password yang Anda masukkan salah",
+		"email atau password yang Anda masukkan salah",
 	)
 	ErrEmailAlreadyUsed = NewError(
 		fiber.StatusConflict,
 		"email_already_used",
-		"Email sudah digunakan oleh akun lain",
+		"email sudah digunakan oleh akun lain",
+	)
+	ErrPhoneAlreadyUsed = NewError(
+		fiber.StatusConflict,
+		"phone_already_used",
+		"nomor telepon sudah digunakan oleh akun lain",
 	)
 )

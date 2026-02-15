@@ -139,6 +139,16 @@ func (r *employeeRepository) CreateEmployee(ctx context.Context, employee entity
 						WithError(err).
 						WithLocation("employeeRepository.CreateEmployee"),
 				},
+				{
+					Code:           pgerror.UniqueViolation,
+					ConstraintName: "employees_phone_key",
+					Err: errx.ErrPhoneAlreadyUsed.
+						WithDetails(map[string]interface{}{
+							"phone": employee.Phone,
+						}).
+						WithError(err).
+						WithLocation("employeeRepository.CreateEmployee"),
+				},
 			}
 
 			if customPgErr := pgerror.HandlePgError(*pgErr, pgErrors); customPgErr != nil {
