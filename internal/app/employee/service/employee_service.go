@@ -42,8 +42,7 @@ func (s *employeeService) GetEmployees(ctx context.Context, query dto.GetEmploye
 	pagination := dto.NewPagination(query.Page, query.Limit)
 
 	employeeQuery := dto.EmployeesQuery{
-		Name:       query.Name,
-		Email:      query.Email,
+		Identifier: query.Identifier,
 		Position:   query.Position,
 		Department: query.Department,
 		Status:     query.Status,

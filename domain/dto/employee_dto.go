@@ -1,7 +1,6 @@
 package dto
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -26,17 +25,15 @@ type EmployeeResponse struct {
 type GetEmployeesQuery struct {
 	Limit      int                         `query:"limit" validate:"omitempty,number,gte=1,lte=100"`
 	Page       int                         `query:"page" validate:"omitempty,number,gte=1"`
-	Name       string                      `query:"name"`
-	Email      string                      `query:"email"`
-	Position   enums.EmployeePositionIdx   `query:"position" validate:"omitempty,oneof=1 2 3 4"`
+	Identifier string                      `query:"identifier"`
+	Position   enums.EmployeePositionIdx   `query:"position" validate:"omitempty,oneof=2 3 4"`
 	Department enums.EmployeeDepartmentIdx `query:"department" validate:"omitempty,oneof=1 2 3 4 5"`
 	Status     enums.EmployeeStatus        `query:"status" validate:"omitempty,oneof=0 1"`
 }
 
 type EmployeesQuery struct {
-	Name       string                      `query:"name"`
-	Email      string                      `query:"email"`
-	Position   enums.EmployeePositionIdx   `query:"position" validate:"omitempty,oneof=1 2 3 4"`
+	Identifier string                      `query:"identifier"`
+	Position   enums.EmployeePositionIdx   `query:"position" validate:"omitempty,oneof=2 3 4"`
 	Department enums.EmployeeDepartmentIdx `query:"department" validate:"omitempty,oneof=1 2 3 4 5"`
 	Status     enums.EmployeeStatus        `query:"status" validate:"omitempty,oneof=0 1"`
 }
@@ -80,7 +77,6 @@ type DeleteEmployeeParam struct {
 }
 
 func FormatToEmployeeResponse(employee entity.Employee) EmployeeResponse {
-	fmt.Println(employee)
 	var position string
 	if employee.Position.Valid {
 		position = enums.EmployeePositionMapIdx[employee.Position.EmployeePositionIdx].LongLabel["id"]

@@ -36,14 +36,12 @@ func (r *employeeRepository) buildEmployeeFilter(query dto.EmployeesQuery) (stri
 		args       []interface{}
 	)
 
-	if query.Name != "" {
-		args = append(args, "%"+query.Name+"%")
-		conditions = append(conditions, fmt.Sprintf("name ILIKE $%d", len(args)))
-	}
-
-	if query.Email != "" {
-		args = append(args, "%"+query.Email+"%")
-		conditions = append(conditions, fmt.Sprintf("email ILIKE $%d", len(args)))
+	if query.Identifier != "" {
+		args = append(args, "%"+query.Identifier+"%")
+		conditions = append(
+			conditions,
+			fmt.Sprintf("(name ILIKE $%d OR email ILIKE $%d)", len(args), len(args)),
+		)
 	}
 
 	if query.Position != 0 {
