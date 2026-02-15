@@ -22,9 +22,25 @@ func InitEmployeeController(
 	}
 
 	employeeGroup := router.Group("/employees", middleware.RequireAuth())
+	employeeGroup.Get("/:id", employeeCtr.GetEmployee)
 	employeeGroup.Post("/", employeeCtr.CreateEmployee)
 	employeeGroup.Put("/:id", employeeCtr.UpdateEmployee)
 	employeeGroup.Delete("/:id", employeeCtr.DeleteEmployee)
+}
+
+func (e *employeeController) GetEmployee(ctx *fiber.Ctx) error {
+	var req dto.GetEmployee
+
+	if err := ctx.ParamsParser(&req); err != nil {
+		return err
+	}
+
+	employee, err := e.employeeService.GetEmployee(ctx.Context(), req)
+	if err != nil {
+		return err
+	}
+
+	return response.SendResponse(ctx, fiber.StatusOK, employee)
 }
 
 func (e *employeeController) CreateEmployee(ctx *fiber.Ctx) error {
