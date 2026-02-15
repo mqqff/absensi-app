@@ -6,6 +6,7 @@ import (
 
 	"github.com/mqqff/absensi-app/domain/contracts"
 	"github.com/mqqff/absensi-app/domain/dto"
+	"github.com/mqqff/absensi-app/domain/enums"
 	"github.com/mqqff/absensi-app/domain/errx"
 	"github.com/mqqff/absensi-app/pkg/bcrypt"
 	"github.com/mqqff/absensi-app/pkg/jwt"
@@ -62,7 +63,17 @@ func (s *authService) LoginWithCredentials(
 		return dto.LoginResponse{}, errx.ErrCredentialsNotMatch
 	}
 
-	accessToken, err := s.jwt.Create(employee.ID, employee.Email, employee.Name, employee.Position, employee.Department)
+	position := enums.PositionUnknownIdx
+	if employee.Position.Valid {
+		position = employee.Position.EmployeePositionIdx
+	}
+
+	department := enums.DepartmentUnknownIdx
+	if employee.Department.Valid {
+		department = employee.Department.EmployeeDepartmentIdx
+	}
+
+	accessToken, err := s.jwt.Create(employee.ID, employee.Email, employee.Name, position, department)
 	if err != nil {
 		return dto.LoginResponse{}, err
 	}
