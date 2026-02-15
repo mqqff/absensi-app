@@ -21,6 +21,10 @@ import (
 	employeeCtr "github.com/mqqff/absensi-app/internal/app/employee/controller"
 	employeeRepo "github.com/mqqff/absensi-app/internal/app/employee/repository"
 	employeeSvc "github.com/mqqff/absensi-app/internal/app/employee/service"
+
+	attendanceCtr "github.com/mqqff/absensi-app/internal/app/attendance/controller"
+	attendanceRepo "github.com/mqqff/absensi-app/internal/app/attendance/repository"
+	attendanceSvc "github.com/mqqff/absensi-app/internal/app/attendance/service"
 )
 
 type HTTPServer interface {
@@ -96,14 +100,17 @@ func (s *httpServer) MountRoutes(db *sqlx.DB) {
 	// Repositories
 	authRepository := authRepo.NewAuthRepository(db)
 	employeeRepository := employeeRepo.NewEmployeeRepository(db)
+	attendanceRepository := attendanceRepo.NewAttendanceRepository(db)
 
 	// Services
 	authService := authSvc.NewAuthService(authRepository, employeeRepository, validator, uuid, jwt, bcrypt)
 	employeeService := employeeSvc.NewEmployeeService(employeeRepository, validator, uuid, bcrypt)
+	attendanceService := attendanceSvc.NewAttendanceService(attendanceRepository, validator, uuid)
 
 	// Controllers
 	authCtr.InitAuthController(v1, authService, middleware)
 	employeeCtr.InitEmployeeController(v1, employeeService, middleware)
+	attendanceCtr.InitAttendanceController(v1, attendanceService, middleware)
 
 	s.app.Use(func(ctx *fiber.Ctx) error {
 		return errx.ErrNotFound
