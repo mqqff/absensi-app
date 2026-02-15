@@ -5,19 +5,19 @@ import (
 )
 
 var (
-	ErrUserNotFound = NewError(
+	ErrEmployeeNotFound = NewError(
 		fiber.StatusNotFound,
-		"user_not_found",
-		"We couldn't find that account",
+		"employee_not_found",
+		"Akun tidak ditemukan",
 	)
 	ErrCredentialsNotMatch = NewError(
 		fiber.StatusUnauthorized,
 		"credentials_not_match",
-		"Incorrect email or password. Please try again.",
+		"Email atau password yang Anda masukkan salah",
 	)
 	ErrEmailAlreadyUsed = NewError(
 		fiber.StatusConflict,
 		"email_already_used",
-		"The email address is already in use by another account",
+		"Email sudah digunakan oleh akun lain",
 	)
 )
