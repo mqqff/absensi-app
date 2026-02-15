@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 
 	"github.com/mqqff/absensi-app/domain/contracts"
 	"github.com/mqqff/absensi-app/domain/dto"
@@ -14,7 +15,7 @@ import (
 
 type authService struct {
 	authRepo  contracts.AuthRepository
-	userRepo  contracts.UserRepository
+	userRepo  contracts.EmployeeRepository
 	validator validator.ValidatorInterface
 	uuid      uuid.UUIDInterface
 	jwt       jwt.CustomJwtInterface
@@ -23,7 +24,7 @@ type authService struct {
 
 func NewAuthService(
 	authRepo contracts.AuthRepository,
-	userRepo contracts.UserRepository,
+	userRepo contracts.EmployeeRepository,
 	validator validator.ValidatorInterface,
 	uuid uuid.UUIDInterface,
 	jwt jwt.CustomJwtInterface,
@@ -48,16 +49,20 @@ func (s *authService) LoginWithCredentials(
 		return dto.LoginResponse{}, valErr
 	}
 
-	user, err := s.authRepo.GetUserByEmail(ctx, req.Email)
+	employee, err := s.authRepo.GetEmployeeByEmail(ctx, req.Email)
 	if err != nil {
+		if errors.Is(err, errx.ErrEmployeeNotFound) {
+			return dto.LoginResponse{}, errx.ErrCredentialsNotMatch
+		}
+
+		return dto.LoginResponse{}, err
+	}
+
+	if !s.bcrypt.Compare(req.Password, employee.Password) {
 		return dto.LoginResponse{}, errx.ErrCredentialsNotMatch
 	}
 
-	if !s.bcrypt.Compare(req.Password, user.Password) {
-		return dto.LoginResponse{}, errx.ErrCredentialsNotMatch
-	}
-
-	accessToken, err := s.jwt.Create(user.ID, user.Name, user.Email)
+	accessToken, err := s.jwt.Create(employee.ID, employee.Email, employee.Name, employee.Position, employee.Department)
 	if err != nil {
 		return dto.LoginResponse{}, err
 	}
@@ -70,7 +75,7 @@ func (s *authService) LoginWithCredentials(
 }
 
 func (s *authService) GetSession(ctx context.Context, name string) (dto.GetSessionResponse, error) {
-	user, err := s.authRepo.GetUserByEmail(ctx, name)
+	user, err := s.authRepo.GetEmployeeByEmail(ctx, name)
 	if err != nil {
 		return dto.GetSessionResponse{}, err
 	}
