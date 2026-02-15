@@ -11,13 +11,13 @@ import (
 )
 
 type CustomJwtInterface interface {
-	Create(userID uuid.UUID, name string, email string, position enums.EmployeePositionIdx, department enums.EmployeeDepartmentIdx) (string, error)
+	Create(employeeID uuid.UUID, name string, email string, position enums.EmployeePositionIdx, department enums.EmployeeDepartmentIdx) (string, error)
 	Decode(tokenString string, claims *Claims) error
 }
 
 type Claims struct {
 	jwt.RegisteredClaims
-	UserID     uuid.UUID                   `json:"user_id"`
+	EmployeeID uuid.UUID                   `json:"employee_id"`
 	Name       string                      `json:"name"`
 	Email      string                      `json:"email"`
 	Position   enums.EmployeePositionIdx   `json:"position"`
@@ -38,7 +38,7 @@ func getJwt() CustomJwtInterface {
 	}
 }
 
-func (j *CustomJwtStruct) Create(userID uuid.UUID, email, name string, position enums.EmployeePositionIdx, department enums.EmployeeDepartmentIdx) (string, error) {
+func (j *CustomJwtStruct) Create(employeeID uuid.UUID, email, name string, position enums.EmployeePositionIdx, department enums.EmployeeDepartmentIdx) (string, error) {
 	claims := Claims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    "absensi-app",
@@ -48,7 +48,7 @@ func (j *CustomJwtStruct) Create(userID uuid.UUID, email, name string, position 
 			NotBefore: jwt.NewNumericDate(time.Now()),
 			ID:        uuid.New().String(),
 		},
-		UserID:     userID,
+		EmployeeID: employeeID,
 		Name:       name,
 		Email:      email,
 		Position:   position,
