@@ -105,3 +105,13 @@ func (r *employeeRepository) CreateEmployee(ctx context.Context, employee entity
 
 	return nil
 }
+
+func (r *employeeRepository) DeleteEmployee(ctx context.Context, employeeID string) error {
+	query := `DELETE FROM employees WHERE id = $1`
+	_, err := r.conn.ExecContext(ctx, query, employeeID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
