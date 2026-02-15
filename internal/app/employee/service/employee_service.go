@@ -8,21 +8,21 @@ import (
 	"github.com/mqqff/absensi-app/domain/entity"
 	"github.com/mqqff/absensi-app/domain/enums"
 	"github.com/mqqff/absensi-app/pkg/bcrypt"
-	"github.com/mqqff/absensi-app/pkg/uuid"
+	customUUID "github.com/mqqff/absensi-app/pkg/uuid"
 	"github.com/mqqff/absensi-app/pkg/validator"
 )
 
 type employeeService struct {
 	userRepo  contracts.EmployeeRepository
 	validator validator.ValidatorInterface
-	uuid      uuid.UUIDInterface
+	uuid      customUUID.UUIDInterface
 	bcrypt    bcrypt.BcryptInterface
 }
 
 func NewEmployeeService(
 	userRepo contracts.EmployeeRepository,
 	validator validator.ValidatorInterface,
-	uuid uuid.UUIDInterface,
+	uuid customUUID.UUIDInterface,
 	bcrypt bcrypt.BcryptInterface,
 ) contracts.EmployeeService {
 	return &employeeService{
@@ -67,4 +67,8 @@ func (s *employeeService) CreateEmployee(ctx context.Context, data dto.CreateEmp
 	}
 
 	return s.userRepo.CreateEmployee(ctx, employee)
+}
+
+func (s *employeeService) DeleteEmployee(ctx context.Context, param dto.DeleteEmployeeParam) error {
+	return s.userRepo.DeleteEmployee(ctx, param.ID)
 }
