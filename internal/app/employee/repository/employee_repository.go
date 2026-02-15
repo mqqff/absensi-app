@@ -85,8 +85,8 @@ func (r *employeeRepository) GetEmployeeByID(ctx context.Context, employeeID str
 
 func (r *employeeRepository) CreateEmployee(ctx context.Context, employee entity.Employee) error {
 	query := `
-		INSERT INTO employees (id, name, email, phone, position, salary, address, status)
-		VALUES (:id, :name, :email, :phone, :position, :salary, :address, :status)
+		INSERT INTO employees (id, name, email, phone, position, salary, address, status, password)
+		VALUES (:id, :name, :email, :phone, :position, :salary, :address, :status, :password)
 	`
 	_, err := r.conn.NamedExecContext(ctx, query, employee)
 
@@ -120,7 +120,7 @@ func (r *employeeRepository) CreateEmployee(ctx context.Context, employee entity
 func (r *employeeRepository) UpdateEmployee(ctx context.Context, employee entity.Employee) error {
 	query := `
 		UPDATE employees
-		SET name = :name, email = :email, phone = :phone, position = :position, salary = :salary, address = :address, password = :password, status = :status
+		SET name = :name, email = :email, phone = :phone, position = :position, salary = :salary, address = :address, status = :status
 		WHERE id = :id
 	`
 
