@@ -17,62 +17,12 @@ import (
 
 type employeeRepository struct {
 	conn *sqlx.DB
-	tx   *sqlx.Tx
 }
 
 func NewEmployeeRepository(conn *sqlx.DB) contracts.EmployeeRepository {
 	return &employeeRepository{
 		conn: conn,
 	}
-}
-
-func (r *employeeRepository) Begin(ctx context.Context) error {
-	tx, err := r.conn.BeginTxx(ctx, nil)
-	if err != nil {
-		return err
-	}
-
-	r.tx = tx
-
-	return nil
-}
-
-func (r *employeeRepository) GetTx() *sqlx.Tx {
-	return r.tx
-}
-
-func (r *employeeRepository) UseTx(tx *sqlx.Tx) {
-	r.tx = tx
-}
-
-func (r *employeeRepository) Commit() error {
-	if r.tx == nil {
-		return errors.New("transaction is nil")
-	}
-
-	err := r.tx.Commit()
-	if err != nil {
-		return err
-	}
-
-	r.tx = nil
-
-	return nil
-}
-
-func (r *employeeRepository) Rollback() error {
-	if r.tx == nil {
-		return errors.New("transaction is nil")
-	}
-
-	err := r.tx.Rollback()
-	if err != nil {
-		return err
-	}
-
-	r.tx = nil
-
-	return nil
 }
 
 func (r *employeeRepository) buildEmployeeFilter(query dto.EmployeesQuery) (string, []interface{}) {
