@@ -5,7 +5,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/jmoiron/sqlx"
 	"github.com/mqqff/absensi-app/domain/errx"
-	userRepo "github.com/mqqff/absensi-app/internal/app/user/repository"
+	employeeRepo "github.com/mqqff/absensi-app/internal/app/employee/repository"
 	"github.com/mqqff/absensi-app/pkg/uuid"
 	"github.com/mqqff/absensi-app/pkg/validator"
 
@@ -93,10 +93,10 @@ func (s *httpServer) MountRoutes(db *sqlx.DB) {
 
 	// Repositories
 	authRepository := authRepo.NewAuthRepository(db)
-	userRepository := userRepo.NewUserRepository(db)
+	employeeRepository := employeeRepo.NewEmployeeRepository(db)
 
 	// Services
-	authService := authSvc.NewAuthService(authRepository, userRepository, validator, uuid, jwt, bcrypt)
+	authService := authSvc.NewAuthService(authRepository, employeeRepository, validator, uuid, jwt, bcrypt)
 
 	// Controllers
 	authCtr.InitAuthController(v1, authService, middleware)
