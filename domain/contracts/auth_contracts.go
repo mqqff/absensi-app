@@ -8,7 +8,7 @@ import (
 )
 
 type AuthRepository interface {
-	GetUserByEmail(ctx context.Context, email string) (entity.User, error)
+	GetEmployeeByEmail(ctx context.Context, email string) (entity.Employee, error)
 }
 
 type AuthService interface {
