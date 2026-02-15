@@ -13,5 +13,5 @@ type AuthRepository interface {
 
 type AuthService interface {
 	LoginWithCredentials(ctx context.Context, req dto.LoginWithCredentialsRequest) (dto.LoginResponse, error)
-	GetSession(ctx context.Context, nim string) (dto.GetSessionResponse, error)
+	GetSession(ctx context.Context, email string) (dto.GetSessionResponse, error)
 }
