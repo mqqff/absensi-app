@@ -7,7 +7,6 @@ import (
 
 type EmployeePositionIdx int64
 type EmployeePositionKey string
-
 type EmployeePositionValue struct {
 	Idx        int64             `json:"idx"`
 	Key        string            `json:"key"`
@@ -16,73 +15,67 @@ type EmployeePositionValue struct {
 }
 
 const (
-	PositionAdminIdx  EmployeePositionIdx = 3
-	PositionHRDIdx    EmployeePositionIdx = 2
-	PositionWorkerIdx EmployeePositionIdx = 1
+	PositionUnknownIdx  EmployeePositionIdx = 1
+	PositionHRIdx       EmployeePositionIdx = 2
+	PositionAdminIdx    EmployeePositionIdx = 3
+	PositionEmployeeIdx EmployeePositionIdx = 4
 
-	PositionAdminKey  EmployeePositionKey = "admin"
-	PositionHRDKey    EmployeePositionKey = "hrd"
-	PositionWorkerKey EmployeePositionKey = "worker"
+	PositionUnknownKey  EmployeePositionKey = "unknown"
+	PositionHRKey       EmployeePositionKey = "hr"
+	PositionAdminKey    EmployeePositionKey = "admin"
+	PositionEmployeeKey EmployeePositionKey = "employee"
 )
 
 var (
+	PositionUnknownValue = EmployeePositionValue{
+		Idx:        int64(PositionUnknownIdx),
+		Key:        string(PositionUnknownKey),
+		LongLabel:  map[string]string{"id": "", "en": ""},
+		ShortLabel: map[string]string{"id": "", "en": ""},
+	}
+
+	PositionHRValue = EmployeePositionValue{
+		Idx:        int64(PositionHRIdx),
+		Key:        string(PositionHRKey),
+		LongLabel:  map[string]string{"id": "Human Resources", "en": "Human Resources"},
+		ShortLabel: map[string]string{"id": "HR", "en": "HR"},
+	}
+
 	PositionAdminValue = EmployeePositionValue{
-		Idx: int64(PositionAdminIdx),
-		Key: string(PositionAdminKey),
-		LongLabel: map[string]string{
-			"id": "Admin",
-			"en": "Admin",
-		},
-		ShortLabel: map[string]string{
-			"id": "Admin",
-			"en": "Admin",
-		},
+		Idx:        int64(PositionAdminIdx),
+		Key:        string(PositionAdminKey),
+		LongLabel:  map[string]string{"id": "Administrator", "en": "Administrator"},
+		ShortLabel: map[string]string{"id": "Admin", "en": "Admin"},
 	}
 
-	PositionHRDValue = EmployeePositionValue{
-		Idx: int64(PositionHRDIdx),
-		Key: string(PositionHRDKey),
-		LongLabel: map[string]string{
-			"id": "HRD",
-			"en": "Human Resources",
-		},
-		ShortLabel: map[string]string{
-			"id": "HRD",
-			"en": "HR",
-		},
-	}
-
-	PositionWorkerValue = EmployeePositionValue{
-		Idx: int64(PositionWorkerIdx),
-		Key: string(PositionWorkerKey),
-		LongLabel: map[string]string{
-			"id": "Pekerja",
-			"en": "Worker",
-		},
-		ShortLabel: map[string]string{
-			"id": "Pkrj",
-			"en": "Wkr",
-		},
+	PositionEmployeeValue = EmployeePositionValue{
+		Idx:        int64(PositionEmployeeIdx),
+		Key:        string(PositionEmployeeKey),
+		LongLabel:  map[string]string{"id": "Pegawai", "en": "Employee"},
+		ShortLabel: map[string]string{"id": "Pegawai", "en": "Emp"},
 	}
 )
 
 var (
 	EmployeePositionMapIdx = map[EmployeePositionIdx]EmployeePositionValue{
-		PositionAdminIdx:  PositionAdminValue,
-		PositionHRDIdx:    PositionHRDValue,
-		PositionWorkerIdx: PositionWorkerValue,
+		PositionUnknownIdx:  PositionUnknownValue,
+		PositionHRIdx:       PositionHRValue,
+		PositionAdminIdx:    PositionAdminValue,
+		PositionEmployeeIdx: PositionEmployeeValue,
 	}
 
 	EmployeePositionMapKey = map[EmployeePositionKey]EmployeePositionValue{
-		PositionAdminKey:  PositionAdminValue,
-		PositionHRDKey:    PositionHRDValue,
-		PositionWorkerKey: PositionWorkerValue,
+		PositionUnknownKey:  PositionUnknownValue,
+		PositionHRKey:       PositionHRValue,
+		PositionAdminKey:    PositionAdminValue,
+		PositionEmployeeKey: PositionEmployeeValue,
 	}
 
 	EmployeePositionMapReverse = map[EmployeePositionKey]EmployeePositionIdx{
-		PositionAdminKey:  PositionAdminIdx,
-		PositionHRDKey:    PositionHRDIdx,
-		PositionWorkerKey: PositionWorkerIdx,
+		PositionUnknownKey:  PositionUnknownIdx,
+		PositionHRKey:       PositionHRIdx,
+		PositionAdminKey:    PositionAdminIdx,
+		PositionEmployeeKey: PositionEmployeeIdx,
 	}
 )
 
@@ -90,15 +83,26 @@ func (p EmployeePositionIdx) String() string {
 	if position, ok := EmployeePositionMapIdx[p]; ok {
 		return position.Key
 	}
-	return ""
+
+	return string(PositionUnknownKey)
 }
 
 func (p *EmployeePositionIdx) Scan(value interface{}) error {
 	if value == nil {
-		return errors.New("position cannot be null")
+		*p = PositionUnknownIdx
+		return nil
 	}
 
 	switch v := value.(type) {
+	case int8:
+		*p = EmployeePositionIdx(v)
+		return nil
+	case int16:
+		*p = EmployeePositionIdx(v)
+		return nil
+	case int32:
+		*p = EmployeePositionIdx(v)
+		return nil
 	case int64:
 		*p = EmployeePositionIdx(v)
 		return nil
@@ -108,15 +112,39 @@ func (p *EmployeePositionIdx) Scan(value interface{}) error {
 			return nil
 		}
 	case []byte:
-		if idx, ok := EmployeePositionMapReverse[EmployeePositionKey(string(v))]; ok {
+		strVal := string(v)
+		if idx, ok := EmployeePositionMapReverse[EmployeePositionKey(strVal)]; ok {
 			*p = idx
 			return nil
 		}
 	}
 
-	return errors.New("invalid employee position value")
+	return errors.New("invalid user position value")
 }
 
-func (p EmployeePositionIdx) Value() (driver.Value, error) {
+func (p EmployeePositionIdx) Value() (int64, error) {
 	return int64(p), nil
+}
+
+type NullEmployeePositionIdx struct {
+	EmployeePositionIdx EmployeePositionIdx
+	Valid               bool
+}
+
+func (p *NullEmployeePositionIdx) Scan(value interface{}) error {
+	if value == nil {
+		p.EmployeePositionIdx, p.Valid = PositionUnknownIdx, false
+		return nil
+	}
+
+	p.Valid = true
+	return p.EmployeePositionIdx.Scan(value)
+}
+
+func (p NullEmployeePositionIdx) Value() (driver.Value, error) {
+	if !p.Valid {
+		return nil, nil
+	}
+
+	return p.EmployeePositionIdx.Value()
 }
