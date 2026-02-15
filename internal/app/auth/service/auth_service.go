@@ -85,16 +85,24 @@ func (s *authService) LoginWithCredentials(
 	return res, nil
 }
 
-func (s *authService) GetSession(ctx context.Context, name string) (dto.GetSessionResponse, error) {
-	user, err := s.authRepo.GetEmployeeByEmail(ctx, name)
+func (s *authService) GetSession(ctx context.Context, email string) (dto.GetSessionResponse, error) {
+	user, err := s.authRepo.GetEmployeeByEmail(ctx, email)
 	if err != nil {
 		return dto.GetSessionResponse{}, err
 	}
 
 	res := dto.GetSessionResponse{
-		ID:    user.ID.String(),
-		Name:  user.Name,
-		Email: user.Email,
+		ID:         user.ID.String(),
+		Name:       user.Name,
+		Email:      user.Email,
+		Phone:      user.Phone,
+		Position:   user.Position.EmployeePositionIdx.String(),
+		Department: user.Department.EmployeeDepartmentIdx.String(),
+		Salary:     user.Salary,
+		Address:    user.Address,
+		Status:     user.Status.String(),
+		CreatedAt:  user.CreatedAt,
+		UpdatedAt:  user.UpdatedAt,
 	}
 
 	return res, nil
