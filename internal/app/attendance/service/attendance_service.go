@@ -32,6 +32,26 @@ func NewAttendanceService(
 	}
 }
 
+func (s *attendanceService) GetOpenAttendance(ctx context.Context, employeeID uuid.UUID) (dto.AttendanceResponse, error) {
+	attendance, err := s.attendanceRepo.GetOpenAttendanceByEmployeeID(ctx, employeeID)
+	if err != nil {
+		if !errors.Is(err, sql.ErrNoRows) {
+			return dto.AttendanceResponse{}, errx.ErrAttendanceOpenNotFound
+		}
+	}
+
+	if attendance.ID == uuid.Nil {
+		return dto.AttendanceResponse{}, errx.ErrAttendanceOpenNotFound
+	}
+
+	return dto.AttendanceResponse{
+		ID:       attendance.ID,
+		CheckIn:  attendance.CheckIn,
+		CheckOut: attendance.CheckOut,
+		Status:   attendance.Status.String(),
+	}, nil
+}
+
 func (s *attendanceService) CheckIn(ctx context.Context, data dto.CheckInRequest) (dto.AttendanceResponse, error) {
 	attendance, err := s.attendanceRepo.GetOpenAttendanceByEmployeeID(ctx, data.EmployeeID)
 	if err != nil {

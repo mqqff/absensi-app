@@ -28,14 +28,14 @@ type GetEmployeesQuery struct {
 	Identifier string                      `query:"identifier"`
 	Position   enums.EmployeePositionIdx   `query:"position" validate:"omitempty,oneof=2 3 4"`
 	Department enums.EmployeeDepartmentIdx `query:"department" validate:"omitempty,oneof=1 2 3 4 5"`
-	Status     enums.EmployeeStatus        `query:"status" validate:"omitempty,oneof=0 1"`
+	Status     enums.EmployeeStatus        `query:"status" validate:"omitempty,oneof=1 2"`
 }
 
 type EmployeesQuery struct {
 	Identifier string                      `query:"identifier"`
 	Position   enums.EmployeePositionIdx   `query:"position" validate:"omitempty,oneof=2 3 4"`
 	Department enums.EmployeeDepartmentIdx `query:"department" validate:"omitempty,oneof=1 2 3 4 5"`
-	Status     enums.EmployeeStatus        `query:"status" validate:"omitempty,oneof=0 1"`
+	Status     enums.EmployeeStatus        `query:"status" validate:"omitempty,oneof=1 2"`
 }
 
 type GetEmployeesResponse struct {

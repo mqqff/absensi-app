@@ -6,7 +6,7 @@ var (
 	ErrAttendanceOpenNotFound = NewError(
 		fiber.StatusNotFound,
 		"attendance_open_not_found",
-		"sudah check-out atau belum check-in",
+		"kamu sudah check-out atau belum check-in",
 	)
 	ErrAlreadyCheckedInToday = NewError(
 		fiber.StatusForbidden,

@@ -15,6 +15,7 @@ type AttendanceRepository interface {
 }
 
 type AttendanceService interface {
+	GetOpenAttendance(ctx context.Context, employeeID uuid.UUID) (dto.AttendanceResponse, error)
 	CheckIn(ctx context.Context, data dto.CheckInRequest) (dto.AttendanceResponse, error)
 	CheckOut(ctx context.Context, data dto.CheckOutRequest) (dto.AttendanceResponse, error)
 }
