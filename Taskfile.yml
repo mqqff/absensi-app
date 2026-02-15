@@ -1,0 +1,125 @@
+# https://taskfile.dev
+
+version: "3"
+
+vars:
+  DSN: "postgres://{{.DB_USER}}:{{.DB_PASS}}@{{.DB_HOST}}:{{.DB_PORT}}/{{.DB_NAME}}?sslmode=disable"
+
+dotenv:
+  - "./config/.env"
+
+tasks:
+  default:
+    desc: "Getting started"
+    cmds:
+      - task: install
+
+  install:
+    desc: "Install dependencies"
+    cmds:
+      - go mod download
+      - go install github.com/go-task/task/v3/cmd/task@latest
+      - go install github.com/air-verse/air@latest
+      - go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+      - go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+
+  db:seed:
+    desc: "Seed database"
+    cmd: go run ./cmd/seed/main.go -entity={{.CLI_ARGS}}
+    requires:
+      vars:
+        - CLI_ARGS
+
+  migrate:create:
+    desc: "Create new database migration"
+    cmd: migrate create -ext sql -dir ./database/migrations {{.CLI_ARGS}}
+    requires:
+      vars:
+        - CLI_ARGS
+
+  migrate:up:
+    desc: "Run database migrations"
+    cmd: migrate -path ./database/migrations -database {{.DSN}} -verbose up {{.CLI_ARGS}}
+    requires:
+      vars:
+        - DSN
+
+  migrate:down:
+    desc: "Rollback database migrations"
+    cmd: migrate -path ./database/migrations -database {{.DSN}} -verbose down {{.CLI_ARGS}}
+    requires:
+      vars:
+        - DSN
+
+  migrate:force:
+    desc: "Force database migrations"
+    cmd: migrate -path ./database/migrations -database {{.DSN}} -verbose force {{.CLI_ARGS}}
+    requires:
+      vars:
+        - DSN
+
+  service:run:
+    desc: "Build and run services."
+    cmd: docker compose --env-file=./config/.env -f docker-compose.yml up -d --build
+
+  service:down:
+    desc: "Stop services."
+    cmd: docker compose -f docker-compose.yml down
+
+  service:cache:clear:
+    desc: "Clear cache"
+    cmd: docker builder prune -f
+
+  service:db:connect:
+    desc: "Connect to database using command line interface"
+    cmd: docker exec -it postgresdb psql -U {{.DB_USER}} -d {{.DB_NAME}}
+    requires:
+      vars:
+        - DB_USER
+        - DB_NAME
+
+  service:migrate:create:
+    desc: "Create new database migration"
+    cmd: docker run -v ./database/migrations:/migrations --network go-boilerplate_network migrate/migrate create -ext sql -dir ./database/migrations -seq {{.CLI_ARGS}}
+    requires:
+      vars:
+        - CLI_ARGS
+
+  service:db:migrate:up:
+    desc: "Run database migrations"
+    cmd: docker run -v ./database/migrations:/migrations --network  go-boilerplate_go-boilerplate migrate/migrate -path=/migrations/ -database {{.DSN}} up
+    requires:
+      vars:
+        - DSN
+
+  service:db:migrate:down:
+    desc: "Rollback database migrations"
+    cmd: docker run -v ./database/migrations:/migrations --network go-boilerplate_network migrate/migrate -path=/migrations/ -database {{.DSN}} down
+    requires:
+      vars:
+        - DSN
+
+  service:migrate:force:
+    desc: "Force database migrations"
+    cmd: docker run -v ./database/migrations:/migrations --network go-boilerplate_network migrate/migrate -path=/migrations/ -database {{.DSN}} force -verbose {{.CLI_ARGS}}
+    requires:
+      vars:
+        - DSN
+        - CLI_ARGS
+
+  dev:
+    desc: "Start development server"
+    cmds:
+      - air
+
+  lint:
+    desc: "Run linter"
+    cmd: golangci-lint run ./...
+
+  build:
+    desc: "Build binary"
+    cmd: go build -o ./bin/absensi-app ./cmd/app/main.go
+
+  start:
+    desc: "Start binary"
+    cmd: ./bin/absensi-app
