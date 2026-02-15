@@ -11,8 +11,9 @@ type AttendanceResponse struct {
 	EmployeeID uuid.UUID  `json:"employee_id"`
 	CheckIn    time.Time  `json:"check_in"`
 	CheckOut   *time.Time `json:"check_out,omitempty"`
+	Status     string     `json:"status,omitempty"`
 }
 
-type CreateAttendanceRequest struct {
+type CheckInRequest struct {
 	EmployeeID uuid.UUID `json:"employee_id"`
 }

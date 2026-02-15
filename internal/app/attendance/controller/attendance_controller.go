@@ -33,11 +33,11 @@ func (c *attendanceController) CreateAttendance(ctx *fiber.Ctx) error {
 		return errx.ErrNoBearerToken
 	}
 
-	req := dto.CreateAttendanceRequest{
+	req := dto.CheckInRequest{
 		EmployeeID: claims.EmployeeID,
 	}
 
-	res, err := c.attendanceService.CreateAttendance(ctx.Context(), req)
+	res, err := c.attendanceService.CheckIn(ctx.Context(), req)
 	if err != nil {
 		return err
 	}

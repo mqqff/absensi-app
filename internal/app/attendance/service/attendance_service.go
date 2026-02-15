@@ -27,7 +27,7 @@ func NewAttendanceService(
 	}
 }
 
-func (s *attendanceService) CreateAttendance(ctx context.Context, data dto.CreateAttendanceRequest) (dto.AttendanceResponse, error) {
+func (s *attendanceService) CheckIn(ctx context.Context, data dto.CheckInRequest) (dto.AttendanceResponse, error) {
 	attendanceID, _ := s.uuid.NewV7()
 
 	attendance := entity.Attendance{
@@ -36,7 +36,7 @@ func (s *attendanceService) CreateAttendance(ctx context.Context, data dto.Creat
 		CheckIn:    time.Now(),
 	}
 
-	err := s.attendanceRepo.CreateAttendance(ctx, attendance)
+	err := s.attendanceRepo.CheckIn(ctx, attendance)
 	if err != nil {
 		return dto.AttendanceResponse{}, err
 	}

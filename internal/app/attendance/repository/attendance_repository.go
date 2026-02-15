@@ -19,7 +19,7 @@ func NewAttendanceRepository(conn *sqlx.DB) contracts.AttendanceRepository {
 	}
 }
 
-func (s *attendanceRepository) CreateAttendance(ctx context.Context, attendance entity.Attendance) error {
+func (s *attendanceRepository) CheckIn(ctx context.Context, attendance entity.Attendance) error {
 	query := `INSERT INTO attendances (id, employee_id, check_in) VALUES ($1, $2, $3)`
 	_, err := s.conn.Exec(query, attendance.ID, attendance.EmployeeID, time.Now())
 	if err != nil {

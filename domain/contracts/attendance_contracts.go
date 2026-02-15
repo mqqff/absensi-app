@@ -8,9 +8,9 @@ import (
 )
 
 type AttendanceRepository interface {
-	CreateAttendance(ctx context.Context, attendance entity.Attendance) error
+	CheckIn(ctx context.Context, attendance entity.Attendance) error
 }
 
 type AttendanceService interface {
-	CreateAttendance(ctx context.Context, data dto.CreateAttendanceRequest) (dto.AttendanceResponse, error)
+	CheckIn(ctx context.Context, data dto.CheckInRequest) (dto.AttendanceResponse, error)
 }
