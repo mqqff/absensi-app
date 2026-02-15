@@ -13,3 +13,7 @@ type CreateEmployeeRequest struct {
 	Department enums.EmployeeDepartmentIdx `json:"department" validate:"required,oneof=1 2 3 4 5"`
 	Status     enums.EmployeeStatus        `json:"status"`
 }
+
+type DeleteEmployeeParam struct {
+	ID string `param:"id" validate:"required,uuid"`
+}
