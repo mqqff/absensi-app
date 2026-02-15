@@ -106,6 +106,41 @@ func (r *employeeRepository) CreateEmployee(ctx context.Context, employee entity
 	return nil
 }
 
+func (r *employeeRepository) UpdateEmployee(ctx context.Context, employee entity.Employee) error {
+	query := `
+		UPDATE employees
+		SET name = :name, email = :email, phone = :phone, position = :position, salary = :salary, address = :address, password = :password, status = :status
+		WHERE id = :id
+	`
+
+	_, err := r.conn.NamedExecContext(ctx, query, employee)
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			pgErrors := []pgerror.PgError{
+				{
+					Code:           pgerror.UniqueViolation,
+					ConstraintName: "employees_email_key",
+					Err: errx.ErrEmailAlreadyUsed.
+						WithDetails(map[string]interface{}{
+							"email": employee.Email,
+						}).
+						WithError(err).
+						WithLocation("employeeRepository.UpdateEmployee"),
+				},
+			}
+
+			if customPgErr := pgerror.HandlePgError(*pgErr, pgErrors); customPgErr != nil {
+				return customPgErr
+			}
+		}
+
+		return err
+	}
+
+	return nil
+}
+
 func (r *employeeRepository) DeleteEmployee(ctx context.Context, employeeID string) error {
 	query := `DELETE FROM employees WHERE id = $1`
 	_, err := r.conn.ExecContext(ctx, query, employeeID)
