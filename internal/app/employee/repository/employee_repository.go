@@ -74,8 +74,8 @@ func (r *employeeRepository) Rollback() error {
 
 func (r *employeeRepository) CreateEmployee(ctx context.Context, employee entity.Employee) error {
 	query := `
-		INSERT INTO employees (id, name, email, phone, position, salary, address, password, status)
-		VALUES (:id, :name, :email, :phone, :position, :salary, :address, :password, :status)
+		INSERT INTO employees (id, name, email, phone, position, salary, address, status)
+		VALUES (:id, :name, :email, :phone, :position, :salary, :address, :status)
 	`
 	_, err := r.conn.NamedExecContext(ctx, query, employee)
 
