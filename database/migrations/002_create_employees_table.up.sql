@@ -3,7 +3,7 @@ CREATE TABLE employees (
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     phone VARCHAR(20) UNIQUE NOT NULL,
-    position SMALLINT NOT NULL DEFAULT 1,
+    position SMALLINT NOT NULL DEFAULT 4 CHECK (position BETWEEN 1 AND 4),
     salary NUMERIC(10, 2) NOT NULL,
     address VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
