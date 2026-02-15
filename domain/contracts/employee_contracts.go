@@ -9,8 +9,10 @@ import (
 
 type EmployeeRepository interface {
 	CreateEmployee(ctx context.Context, employee entity.Employee) error
+	DeleteEmployee(ctx context.Context, employeeID string) error
 }
 
 type EmployeeService interface {
 	CreateEmployee(ctx context.Context, data dto.CreateEmployeeRequest) error
+	DeleteEmployee(ctx context.Context, param dto.DeleteEmployeeParam) error
 }
