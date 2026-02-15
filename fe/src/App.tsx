@@ -8,35 +8,31 @@ import EmployeeIndex from "./pages/Employees/Index"
 import EmployeeCreate from "./pages/Employees/Create.tsx";
 import EmployeeEdit from "./pages/Employees/Edit.tsx";
 import AttendanceIndex from "./pages/Attendances/Index.tsx";
-import {AuthProvider} from "./context/AuthContext.tsx";
-import ProtectedRoute from "./middleware/ProtectedRoute.tsx";
 
 export default function App() {
     return (
         <>
-            <AuthProvider>
-                <Router>
-                    <ScrollToTop/>
-                    <Routes>
-                        {/* Dashboard Layout */}
-                        <Route element={<AppLayout/>}>
-                            <Route index path="/" element={<Home/>}/>
+            <Router>
+                <ScrollToTop/>
+                <Routes>
+                    {/* Dashboard Layout */}
+                    <Route element={<AppLayout/>}>
+                        <Route index path="/" element={<Home/>}/>
 
-                            <Route path="/employees" element={<ProtectedRoute><EmployeeIndex/></ProtectedRoute>}/>
-                            <Route path="/employees/create" element={<ProtectedRoute><EmployeeCreate/></ProtectedRoute>}/>
-                            <Route path="/employees/:id/edit" element={<ProtectedRoute><EmployeeEdit/></ProtectedRoute>} />
+                        <Route path="/employees" element={<EmployeeIndex/>}/>
+                        <Route path="/employees/create" element={<EmployeeCreate/>}/>
+                        <Route path="/employees/:id/edit" element={<EmployeeEdit/>} />
 
-                            <Route path="/attendance" element={<AttendanceIndex />} />
-                        </Route>
+                        <Route path="/attendance" element={<AttendanceIndex />} />
+                    </Route>
 
-                        {/* Auth Layout */}
-                        <Route path="/signin" element={<SignIn/>}/>
+                    {/* Auth Layout */}
+                    <Route path="/signin" element={<SignIn/>}/>
 
-                        {/* Fallback Route */}
-                        <Route path="*" element={<NotFound/>}/>
-                    </Routes>
-                </Router>
-            </AuthProvider>
+                    {/* Fallback Route */}
+                    <Route path="*" element={<NotFound/>}/>
+                </Routes>
+            </Router>
         </>
     );
 }
