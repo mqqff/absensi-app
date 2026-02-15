@@ -24,10 +24,11 @@ func InitAttendanceController(
 	}
 
 	attendanceGroup := router.Group("/attendances", middleware.RequireAuth())
-	attendanceGroup.Post("/", attendanceCtr.CreateAttendance)
+	attendanceGroup.Post("/checkin", attendanceCtr.CheckIn)
+	attendanceGroup.Patch("/checkout", attendanceCtr.CheckOut)
 }
 
-func (c *attendanceController) CreateAttendance(ctx *fiber.Ctx) error {
+func (c *attendanceController) CheckIn(ctx *fiber.Ctx) error {
 	claims, ok := ctx.Locals("claims").(jwt.Claims)
 	if !ok {
 		return errx.ErrNoBearerToken
@@ -43,4 +44,22 @@ func (c *attendanceController) CreateAttendance(ctx *fiber.Ctx) error {
 	}
 
 	return response.SendResponse(ctx, fiber.StatusCreated, res)
+}
+
+func (c *attendanceController) CheckOut(ctx *fiber.Ctx) error {
+	claims, ok := ctx.Locals("claims").(jwt.Claims)
+	if !ok {
+		return errx.ErrNoBearerToken
+	}
+
+	req := dto.CheckOutRequest{
+		EmployeeID: claims.EmployeeID,
+	}
+
+	res, err := c.attendanceService.CheckOut(ctx.Context(), req)
+	if err != nil {
+		return err
+	}
+
+	return response.SendResponse(ctx, fiber.StatusOK, res)
 }
