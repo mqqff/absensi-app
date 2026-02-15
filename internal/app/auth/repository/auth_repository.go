@@ -21,20 +21,20 @@ func NewAuthRepository(conn *sqlx.DB) contracts.AuthRepository {
 	}
 }
 
-func (r *authRepository) GetUserByEmail(ctx context.Context, email string) (entity.User, error) {
-	user := entity.User{}
-	query := `SELECT * FROM users WHERE email = $1`
+func (r *authRepository) GetEmployeeByEmail(ctx context.Context, email string) (entity.Employee, error) {
+	user := entity.Employee{}
+	query := `SELECT * FROM employees WHERE email = $1`
 	err := r.conn.GetContext(ctx, &user, query, email)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return entity.User{}, errx.ErrCredentialsNotMatch.
+			return entity.Employee{}, errx.ErrCredentialsNotMatch.
 				WithDetails(map[string]interface{}{
 					"email": email,
 				}).
-				WithLocation("authRepository.GetUserByEmail")
+				WithLocation("authRepository.GetEmployeeByEmail")
 		}
 
-		return entity.User{}, err
+		return entity.Employee{}, err
 	}
 
 	return user, nil
