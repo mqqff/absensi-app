@@ -23,8 +23,27 @@ type EmployeeResponse struct {
 	UpdatedAt  time.Time `json:"updated_at"`
 }
 
-type GetEmployeeResponse struct {
+type GetEmployeesQuery struct {
+	Limit      int                         `query:"limit" validate:"omitempty,number,gte=1,lte=100"`
+	Page       int                         `query:"page" validate:"omitempty,number,gte=1"`
+	Name       string                      `query:"name"`
+	Email      string                      `query:"email"`
+	Position   enums.EmployeePositionIdx   `query:"position" validate:"omitempty,oneof=1 2 3 4"`
+	Department enums.EmployeeDepartmentIdx `query:"department" validate:"omitempty,oneof=1 2 3 4 5"`
+	Status     enums.EmployeeStatus        `query:"status" validate:"omitempty,oneof=0 1"`
+}
+
+type EmployeesQuery struct {
+	Name       string                      `query:"name"`
+	Email      string                      `query:"email"`
+	Position   enums.EmployeePositionIdx   `query:"position" validate:"omitempty,oneof=1 2 3 4"`
+	Department enums.EmployeeDepartmentIdx `query:"department" validate:"omitempty,oneof=1 2 3 4 5"`
+	Status     enums.EmployeeStatus        `query:"status" validate:"omitempty,oneof=0 1"`
+}
+
+type GetEmployeesResponse struct {
 	Employees []EmployeeResponse `json:"employees"`
+	Meta      PaginationResponse `json:"meta"`
 }
 
 type GetEmployee struct {
