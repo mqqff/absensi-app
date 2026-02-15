@@ -8,7 +8,7 @@ import (
 	"github.com/mqqff/absensi-app/domain/enums"
 )
 
-type User struct {
+type Employee struct {
 	ID         uuid.UUID                   `db:"id" json:"id"`
 	Name       string                      `db:"name" json:"name"`
 	Email      string                      `db:"email" json:"email"`

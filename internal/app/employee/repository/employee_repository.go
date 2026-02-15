@@ -12,18 +12,18 @@ import (
 	"github.com/mqqff/absensi-app/pkg/helpers/pgerror"
 )
 
-type userRepository struct {
+type employeeRepository struct {
 	conn *sqlx.DB
 	tx   *sqlx.Tx
 }
 
-func NewUserRepository(conn *sqlx.DB) contracts.UserRepository {
-	return &userRepository{
+func NewEmployeeRepository(conn *sqlx.DB) contracts.EmployeeRepository {
+	return &employeeRepository{
 		conn: conn,
 	}
 }
 
-func (r *userRepository) Begin(ctx context.Context) error {
+func (r *employeeRepository) Begin(ctx context.Context) error {
 	tx, err := r.conn.BeginTxx(ctx, nil)
 	if err != nil {
 		return err
@@ -34,15 +34,15 @@ func (r *userRepository) Begin(ctx context.Context) error {
 	return nil
 }
 
-func (r *userRepository) GetTx() *sqlx.Tx {
+func (r *employeeRepository) GetTx() *sqlx.Tx {
 	return r.tx
 }
 
-func (r *userRepository) UseTx(tx *sqlx.Tx) {
+func (r *employeeRepository) UseTx(tx *sqlx.Tx) {
 	r.tx = tx
 }
 
-func (r *userRepository) Commit() error {
+func (r *employeeRepository) Commit() error {
 	if r.tx == nil {
 		return errors.New("transaction is nil")
 	}
@@ -57,7 +57,7 @@ func (r *userRepository) Commit() error {
 	return nil
 }
 
-func (r *userRepository) Rollback() error {
+func (r *employeeRepository) Rollback() error {
 	if r.tx == nil {
 		return errors.New("transaction is nil")
 	}
@@ -72,16 +72,16 @@ func (r *userRepository) Rollback() error {
 	return nil
 }
 
-func (r *userRepository) CreateUser(ctx context.Context, user entity.User) error {
+func (r *employeeRepository) CreateEmployee(ctx context.Context, employee entity.Employee) error {
 	query := `
-		INSERT INTO users (id, name, email, password)
+		INSERT INTO employees (id, name, email, password)
 		VALUES ($1, $2, $3, $4)
 	`
 	_, err := r.conn.ExecContext(ctx, query,
-		user.ID,
-		user.Name,
-		user.Email,
-		user.Password,
+		employee.ID,
+		employee.Name,
+		employee.Email,
+		employee.Password,
 	)
 
 	if err != nil {
@@ -90,13 +90,13 @@ func (r *userRepository) CreateUser(ctx context.Context, user entity.User) error
 			pgErrors := []pgerror.PgError{
 				{
 					Code:           pgerror.UniqueViolation,
-					ConstraintName: "users_email_key",
+					ConstraintName: "employees_email_key",
 					Err: errx.ErrEmailAlreadyUsed.
 						WithDetails(map[string]interface{}{
-							"email": user.Email,
+							"email": employee.Email,
 						}).
 						WithError(err).
-						WithLocation("userRepository.CreateUser"),
+						WithLocation("employeeRepository.CreateEmployee"),
 				},
 			}
 
