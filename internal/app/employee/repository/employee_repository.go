@@ -74,15 +74,10 @@ func (r *employeeRepository) Rollback() error {
 
 func (r *employeeRepository) CreateEmployee(ctx context.Context, employee entity.Employee) error {
 	query := `
-		INSERT INTO employees (id, name, email, password)
-		VALUES ($1, $2, $3, $4)
+		INSERT INTO employees (id, name, email, phone, position, salary, address, password, status)
+		VALUES (:id, :name, :email, :phone, :position, :salary, :address, :password, :status)
 	`
-	_, err := r.conn.ExecContext(ctx, query,
-		employee.ID,
-		employee.Name,
-		employee.Email,
-		employee.Password,
-	)
+	_, err := r.conn.NamedExecContext(ctx, query, employee)
 
 	if err != nil {
 		var pgErr *pgconn.PgError
