@@ -5,7 +5,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/jmoiron/sqlx"
 	"github.com/mqqff/absensi-app/domain/errx"
-	employeeRepo "github.com/mqqff/absensi-app/internal/app/employee/repository"
 	"github.com/mqqff/absensi-app/pkg/uuid"
 	"github.com/mqqff/absensi-app/pkg/validator"
 
@@ -14,11 +13,14 @@ import (
 	"github.com/mqqff/absensi-app/pkg/bcrypt"
 	errorHandler "github.com/mqqff/absensi-app/pkg/helpers/http/error_handler"
 	"github.com/mqqff/absensi-app/pkg/jwt"
-	// s3 "github.com/mqqff/absensi-app/pkg/s3"
 
 	authCtr "github.com/mqqff/absensi-app/internal/app/auth/controller"
 	authRepo "github.com/mqqff/absensi-app/internal/app/auth/repository"
 	authSvc "github.com/mqqff/absensi-app/internal/app/auth/service"
+
+	employeeCtr "github.com/mqqff/absensi-app/internal/app/employee/controller"
+	employeeRepo "github.com/mqqff/absensi-app/internal/app/employee/repository"
+	employeeSvc "github.com/mqqff/absensi-app/internal/app/employee/service"
 )
 
 type HTTPServer interface {
@@ -97,9 +99,11 @@ func (s *httpServer) MountRoutes(db *sqlx.DB) {
 
 	// Services
 	authService := authSvc.NewAuthService(authRepository, employeeRepository, validator, uuid, jwt, bcrypt)
+	employeeService := employeeSvc.NewEmployeeService(employeeRepository, validator, uuid, bcrypt)
 
 	// Controllers
 	authCtr.InitAuthController(v1, authService, middleware)
+	employeeCtr.InitEmployeeController(v1, employeeService, middleware)
 
 	s.app.Use(func(ctx *fiber.Ctx) error {
 		return errx.ErrNotFound
