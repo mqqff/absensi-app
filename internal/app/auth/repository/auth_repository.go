@@ -27,7 +27,7 @@ func (r *authRepository) GetEmployeeByEmail(ctx context.Context, email string) (
 	err := r.conn.GetContext(ctx, &user, query, email)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return entity.Employee{}, errx.ErrCredentialsNotMatch.
+			return entity.Employee{}, errx.ErrEmployeeNotFound.
 				WithDetails(map[string]interface{}{
 					"email": email,
 				}).
