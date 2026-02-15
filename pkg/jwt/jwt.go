@@ -38,7 +38,7 @@ func getJwt() CustomJwtInterface {
 	}
 }
 
-func (j *CustomJwtStruct) Create(userID uuid.UUID, name, email string, position enums.EmployeePositionIdx, department enums.EmployeeDepartmentIdx) (string, error) {
+func (j *CustomJwtStruct) Create(userID uuid.UUID, email, name string, position enums.EmployeePositionIdx, department enums.EmployeeDepartmentIdx) (string, error) {
 	claims := Claims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    "absensi-app",
