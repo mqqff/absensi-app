@@ -8,12 +8,14 @@ import (
 )
 
 type EmployeeRepository interface {
+	GetEmployeeByID(ctx context.Context, employeeID string) (entity.Employee, error)
 	CreateEmployee(ctx context.Context, employee entity.Employee) error
 	UpdateEmployee(ctx context.Context, employee entity.Employee) error
 	DeleteEmployee(ctx context.Context, employeeID string) error
 }
 
 type EmployeeService interface {
+	GetEmployee(ctx context.Context, param dto.GetEmployee) (dto.EmployeeResponse, error)
 	CreateEmployee(ctx context.Context, data dto.CreateEmployeeRequest) error
 	UpdateEmployee(ctx context.Context, data dto.UpdateEmployeeRequest) error
 	DeleteEmployee(ctx context.Context, param dto.DeleteEmployeeParam) error
