@@ -3,6 +3,7 @@ package jwt
 import (
 	"time"
 
+	"github.com/mqqff/absensi-app/domain/enums"
 	"github.com/mqqff/absensi-app/internal/infra/env"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -10,15 +11,17 @@ import (
 )
 
 type CustomJwtInterface interface {
-	Create(id uuid.UUID, name, email string) (string, error)
+	Create(userID uuid.UUID, name string, email string, position enums.EmployeePositionIdx, department enums.EmployeeDepartmentIdx) (string, error)
 	Decode(tokenString string, claims *Claims) error
 }
 
 type Claims struct {
 	jwt.RegisteredClaims
-	UserID uuid.UUID `json:"user_id"`
-	Name   string    `json:"name"`
-	Email  string    `json:"email"`
+	UserID     uuid.UUID                   `json:"user_id"`
+	Name       string                      `json:"name"`
+	Email      string                      `json:"email"`
+	Position   enums.EmployeePositionIdx   `json:"position"`
+	Department enums.EmployeeDepartmentIdx `json:"department"`
 }
 
 type CustomJwtStruct struct {
@@ -35,19 +38,21 @@ func getJwt() CustomJwtInterface {
 	}
 }
 
-func (j *CustomJwtStruct) Create(userID uuid.UUID, name, email string) (string, error) {
+func (j *CustomJwtStruct) Create(userID uuid.UUID, name, email string, position enums.EmployeePositionIdx, department enums.EmployeeDepartmentIdx) (string, error) {
 	claims := Claims{
 		RegisteredClaims: jwt.RegisteredClaims{
-			Issuer:    "cbm-osticket",
-			Audience:  jwt.ClaimStrings{"cbm-osticket"},
+			Issuer:    "absensi-app",
+			Audience:  jwt.ClaimStrings{"absensi-app"},
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(j.ExpiredTime)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			NotBefore: jwt.NewNumericDate(time.Now()),
 			ID:        uuid.New().String(),
 		},
-		UserID: userID,
-		Name:   name,
-		Email:  email,
+		UserID:     userID,
+		Name:       name,
+		Email:      email,
+		Position:   position,
+		Department: department,
 	}
 
 	unsignedJWT := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
