@@ -33,6 +33,44 @@ func NewEmployeeService(
 	}
 }
 
+func (s *employeeService) GetEmployees(ctx context.Context, query dto.GetEmployeesQuery) (dto.GetEmployeesResponse, error) {
+	valErr := s.validator.Validate(query)
+	if valErr != nil {
+		return dto.GetEmployeesResponse{}, valErr
+	}
+
+	pagination := dto.NewPagination(query.Page, query.Limit)
+
+	employeeQuery := dto.EmployeesQuery{
+		Name:       query.Name,
+		Email:      query.Email,
+		Position:   query.Position,
+		Department: query.Department,
+		Status:     query.Status,
+	}
+
+	employees, err := s.userRepo.GetEmployees(ctx, employeeQuery, pagination)
+	if err != nil {
+		return dto.GetEmployeesResponse{}, err
+	}
+
+	countEmployees, err := s.userRepo.CountEmployees(ctx, employeeQuery)
+	if err != nil {
+		return dto.GetEmployeesResponse{}, err
+	}
+
+	res := dto.GetEmployeesResponse{
+		Employees: make([]dto.EmployeeResponse, 0),
+		Meta:      dto.NewPaginationResponse(int64(countEmployees), pagination.Page, pagination.Limit),
+	}
+
+	for _, employee := range employees {
+		res.Employees = append(res.Employees, dto.FormatToEmployeeResponse(employee))
+	}
+
+	return res, nil
+}
+
 func (s *employeeService) GetEmployee(ctx context.Context, param dto.GetEmployee) (dto.EmployeeResponse, error) {
 	valErr := s.validator.Validate(param)
 	if valErr != nil {
